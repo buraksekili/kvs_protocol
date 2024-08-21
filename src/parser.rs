@@ -1,5 +1,5 @@
 use std::{
-    io::{self, BufWriter, Cursor, Read},
+    io::{self},
     iter::Peekable,
 };
 
@@ -91,7 +91,6 @@ fn test_multiple_reqs() {
         .collect::<io::Result<Vec<u8>>>()
         .expect("failed to parse given byte stream");
     assert_eq!(parsed_stream, expected);
-
 
     let multiple_requests_byte = b"\r:set key val:\r:get key:\r:rm key:";
     let expected = b"set key val:get key:rm key:";
