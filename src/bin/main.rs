@@ -19,12 +19,7 @@ fn handle_client(stream: &mut TcpStream) {
     };
 }
 
-use kvs_protocol::{
-    deserializer::{deserialize, Deserializer},
-    error::Result,
-    parser,
-    request::Request,
-};
+use kvs_protocol::{deserializer::deserialize, error::Result, parser, request::Request};
 
 fn main() -> Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080")?;

@@ -116,10 +116,10 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
 
     fn serialize_newtype_variant<T: ser::Serialize + ?Sized>(
         self,
-        name: &'static str,
-        index: u32,
-        variant: &'static str,
-        value: &T,
+        _: &'static str,
+        _: u32,
+        _: &'static str,
+        _: &T,
     ) -> Result<()> {
         unimplemented!()
     }

@@ -1,5 +1,5 @@
 use std::{
-    io::{self, Cursor, Read},
+    io::{self},
     iter::Peekable,
 };
 
@@ -65,35 +65,42 @@ where
     return KvReqParser::new(buf_stream);
 }
 
-#[test]
-fn test_single_req() {
-    let single_request_byte = b"\r:get a:\n";
-    let expected = b"get a:\n";
+mod tests {
+    #[allow(unused_imports)]
+    use io::{Cursor, Read};
 
-    let stream = Cursor::new(single_request_byte).bytes();
-    let parsed_stream = KvReqParser::new(stream)
-        .collect::<io::Result<Vec<u8>>>()
-        .expect("failed to parse given byte stream");
-    assert_eq!(parsed_stream, expected);
-}
+    use super::*;
 
-#[test]
-fn test_multiple_reqs() {
-    let multiple_requests_byte = b"\r:set key val:\r:get key:";
-    let expected = b"set key val:get key:";
+    #[test]
+    fn test_single_req() {
+        let single_request_byte = b"\r:get a:\n";
+        let expected = b"get a:\n";
 
-    let stream = Cursor::new(multiple_requests_byte).bytes();
-    let parsed_stream = KvReqParser::new(stream)
-        .collect::<io::Result<Vec<u8>>>()
-        .expect("failed to parse given byte stream");
-    assert_eq!(parsed_stream, expected);
+        let stream = Cursor::new(single_request_byte).bytes();
+        let parsed_stream = KvReqParser::new(stream)
+            .collect::<io::Result<Vec<u8>>>()
+            .expect("failed to parse given byte stream");
+        assert_eq!(parsed_stream, expected);
+    }
 
-    let multiple_requests_byte = b"\r:set key val:\r:get key:\r:rm key:";
-    let expected = b"set key val:get key:rm key:";
+    #[test]
+    fn test_multiple_reqs() {
+        let multiple_requests_byte = b"\r:set key val:\r:get key:";
+        let expected = b"set key val:get key:";
 
-    let stream = Cursor::new(multiple_requests_byte).bytes();
-    let parsed_stream = KvReqParser::new(stream)
-        .collect::<io::Result<Vec<u8>>>()
-        .expect("failed to parse given byte stream");
-    assert_eq!(parsed_stream, expected);
+        let stream = Cursor::new(multiple_requests_byte).bytes();
+        let parsed_stream = KvReqParser::new(stream)
+            .collect::<io::Result<Vec<u8>>>()
+            .expect("failed to parse given byte stream");
+        assert_eq!(parsed_stream, expected);
+
+        let multiple_requests_byte = b"\r:set key val:\r:get key:\r:rm key:";
+        let expected = b"set key val:get key:rm key:";
+
+        let stream = Cursor::new(multiple_requests_byte).bytes();
+        let parsed_stream = KvReqParser::new(stream)
+            .collect::<io::Result<Vec<u8>>>()
+            .expect("failed to parse given byte stream");
+        assert_eq!(parsed_stream, expected);
+    }
 }
