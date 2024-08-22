@@ -14,7 +14,7 @@ impl<I> KvReqParser<I>
 where
     I: Iterator<Item = io::Result<u8>>,
 {
-    fn new(iter: I) -> Self {
+    pub fn new(iter: I) -> Self {
         Self {
             iter: iter.peekable(),
         }
@@ -58,15 +58,11 @@ where
     }
 }
 
-pub fn t<I>(buf_stream: I)
+pub fn from_iterator<I>(buf_stream: I) -> KvReqParser<I>
 where
     I: Iterator<Item = io::Result<u8>>,
 {
-    let result: Vec<u8> = KvReqParser::new(buf_stream)
-        .collect::<io::Result<Vec<u8>>>()
-        .unwrap();
-
-    println!("result: {:?}", String::from_utf8_lossy(&result));
+    return KvReqParser::new(buf_stream);
 }
 
 #[test]

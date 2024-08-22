@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 pub enum Error {
     IOError(),
     InvalidData(String),
+    TrailingCharacters,
 }
 
 impl std::error::Error for Error {}
@@ -13,6 +14,7 @@ impl std::fmt::Display for Error {
         match self {
             Error::IOError() => write!(f, "io error"),
             Error::InvalidData(msg) => write!(f, "invalid data: {msg}"),
+            Error::TrailingCharacters => write!(f, "unexpected trailing characters found"),
         }
     }
 }

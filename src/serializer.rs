@@ -4,7 +4,6 @@ use serde::{ser, Serialize};
 pub fn serialize<T: ser::Serialize>(request: &T) -> String {
     let mut serializer = KvRequestSerializer {
         output: String::new(),
-        val: false,
     };
 
     request
@@ -15,7 +14,6 @@ pub fn serialize<T: ser::Serialize>(request: &T) -> String {
 
 struct KvRequestSerializer {
     output: String,
-    val: bool,
 }
 
 impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
@@ -116,7 +114,6 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
         unimplemented!()
     }
 
-    /// Newtype variants are serialized using the variant index and inner type.
     fn serialize_newtype_variant<T: ser::Serialize + ?Sized>(
         self,
         name: &'static str,
@@ -124,8 +121,7 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
         variant: &'static str,
         value: &T,
     ) -> Result<()> {
-        self.serialize_unit_variant(name, index, variant)?;
-        value.serialize(self)
+        unimplemented!()
     }
 
     fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq> {
@@ -144,8 +140,6 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
         unimplemented!()
     }
 
-    /// Tuple variants are serialized using the variant index and the
-    /// concatenation of the serialized elements.
     fn serialize_tuple_variant(
         self,
         _: &'static str,
@@ -177,10 +171,6 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
             "Rm" => Ok("rm"),
             _ => Err(Error::InvalidData(String::from("invalid request provided"))),
         }?;
-
-        if req_type == "set" {
-            self.val = true;
-        }
 
         self.output += "\r";
         self.output += ":";
