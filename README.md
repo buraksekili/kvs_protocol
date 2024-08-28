@@ -13,7 +13,7 @@ cargo run
 then, you can send the messages to see the output:
 
 ```bash
-echo "\r:get a:" | nc localhost 8080
-echo "\r:set a b:" | nc localhost 8080
-echo "\r:rm a :" | nc localhost 8080
+echo "+:get a:" | nc localhost 8080
+echo "+:set a b:" | nc localhost 8080
+echo "+:rm a :" | nc localhost 8080
 ```
