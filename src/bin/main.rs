@@ -1,23 +1,30 @@
 use kvs_protocol::{deserializer::deserialize, error::Result, parser, request::Request};
 use std::{
-    io::{self, BufReader, Read},
+    io::{BufReader, Read},
     net::{TcpListener, TcpStream},
 };
 
 fn handle_client(stream: &mut TcpStream) {
-    let buf_stream: io::Bytes<BufReader<&mut TcpStream>> = BufReader::new(stream).bytes();
-    match parser::from_iterator(buf_stream).collect::<io::Result<Vec<u8>>>() {
-        Err(e) => eprintln!("failed to parse incoming request, err: {:?}", e),
-        Ok(parsed) => {
-            let parsed_str = String::from_utf8_lossy(&parsed);
-            println!("parsed stream result => {}", parsed_str);
+    println!("******* handling client request **********");
+    let mut buf_stream = BufReader::new(stream);
+    let mut buf: Vec<u8> = Vec::new();
 
-            match deserialize::<Request>(&parsed_str) {
-                Err(e) => eprintln!("failed to deserialize parsed request, err: {}", e),
-                Ok(v) => println!("parsed and deserialized request {:?}", v),
-            }
+    match buf_stream.read_to_end(&mut buf) {
+        Err(e) => eprintln!("failed to read from buffer, err: {}", e),
+        Ok(_) => {}
+    }
+
+    let mut parser = parser::KvReqParser::new(&buf);
+    while let Some(v) = parser.next() {
+        let parsed_str = String::from_utf8_lossy(v);
+        println!("parsed stream result => {}", parsed_str);
+        match deserialize::<Request>(&parsed_str) {
+            Err(e) => eprintln!("failed to deserialize parsed request, err: {}", e),
+            Ok(v) => println!("parsed and deserialized request {:?}", v),
         }
     };
+
+    println!("******* DONE **********");
 }
 
 fn main() -> Result<()> {
