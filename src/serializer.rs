@@ -172,8 +172,7 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
             _ => Err(Error::InvalidData(String::from("invalid request provided"))),
         }?;
 
-        self.output += "\r";
-        self.output += ":";
+        self.output += "+:";
         self.output += req_type;
 
         Ok(self)
@@ -182,7 +181,6 @@ impl<'a> ser::Serializer for &'a mut KvRequestSerializer {
 
 impl<'a> ser::SerializeStructVariant for &'a mut KvRequestSerializer {
     type Ok = ();
-
     type Error = Error;
 
     fn serialize_field<T>(
@@ -212,7 +210,7 @@ fn test_serialization_request_struct() {
         key: "get_key_testing".to_owned(),
     };
 
-    let expected_get = "\r:get get_key_testing:";
+    let expected_get = "+:get get_key_testing:";
     assert_eq!(serialize(&get_request), expected_get);
 
     let set_request = Request::Set {
@@ -220,13 +218,13 @@ fn test_serialization_request_struct() {
         val: "set_val_testing".to_owned(),
     };
 
-    let expected_set = "\r:set set_key_testing set_val_testing:";
+    let expected_set = "+:set set_key_testing set_val_testing:";
     assert_eq!(serialize(&set_request), expected_set);
 
     let rm_request = Request::Rm {
         key: "rm_key_testing".to_owned(),
     };
 
-    let expected_rm = "\r:rm rm_key_testing:";
+    let expected_rm = "+:rm rm_key_testing:";
     assert_eq!(serialize(&rm_request), expected_rm);
 }

@@ -26,8 +26,6 @@ impl<'de> de::Visitor<'de> for RequestVisitor {
             ));
         }
 
-        let cmd_name = inputs[0];
-
         let get_key = |key: &str| -> String {
             let trimmed = key.trim();
 
@@ -40,6 +38,11 @@ impl<'de> de::Visitor<'de> for RequestVisitor {
 
             return trimmed.to_owned();
         };
+
+        let mut cmd_name = inputs[0];
+        if cmd_name.starts_with("+:") {
+            cmd_name = cmd_name.trim().get(2..cmd_name.len()).unwrap_or(cmd_name);
+        }
 
         let key = inputs[1];
 
@@ -54,9 +57,10 @@ impl<'de> de::Visitor<'de> for RequestVisitor {
                     val: get_key(val),
                 })
             }
-            _ => Err(de::Error::custom(
-                "invalid command is provided, valid commands are 'get', 'set' and 'rm'",
-            )),
+            _ => Err(de::Error::custom(format!(
+                "invalid command is provided, valid commands are 'get', 'set' and 'rm', but got {}",
+                cmd_name
+            ))),
         }
     }
 }
