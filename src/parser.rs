@@ -14,6 +14,10 @@ impl<'b> KvReqParser<'b> {
         Self { bytes, pos: 0 }
     }
 
+    pub fn read_so_far(&self) -> usize {
+        self.pos
+    }
+
     fn find_next_command(&mut self) -> Option<&'b [u8]> {
         loop {
             if self.pos >= self.bytes.len() {
@@ -73,13 +77,21 @@ mod tests {
         let first_cmd = parser.next().expect("failed to parse given byte stream");
         let expected = b"set key val";
         assert_eq!(first_cmd, expected);
+        let read = parser.read_so_far();
+        println!("read so far: {}", read);
 
         let second_cmd = parser.next().expect("failed to parse given byte stream");
         let expected = b"get key";
         assert_eq!(second_cmd, expected);
 
+        let read = parser.read_so_far();
+        println!("read so far: {}", read);
+
         let third_cmd = parser.next().expect("failed to parse given byte stream");
         let expected = b"rm something";
         assert_eq!(third_cmd, expected);
+
+        let read = parser.read_so_far();
+        println!("read so far: {}", read);
     }
 }
