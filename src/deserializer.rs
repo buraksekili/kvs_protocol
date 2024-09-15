@@ -117,48 +117,46 @@ mod tests {
     #[test]
     fn test_deserialize_get() {
         let data = r"get abc:";
+        let trailing_data = std::str::from_utf8(b"get abc:\n").unwrap();
         let expected = Request::Get {
             key: "abc".to_string(),
         };
 
         let result: Request = deserialize(data).expect("failed to deserialize");
+        let trailing_result: Request = deserialize(trailing_data).expect("failed to deserialize");
 
         assert_eq!(expected, result);
-    }
-
-    #[test]
-    fn test_deserialize_with_trailing() {
-        let data = std::str::from_utf8(b"get abc:\n").unwrap();
-        let expected = Request::Get {
-            key: "abc".to_string(),
-        };
-        let result: Request = deserialize(data).expect("failed to deserialize");
-
-        assert_eq!(expected, result);
+        assert_eq!(expected, trailing_result);
     }
 
     #[test]
     fn test_deserialize_set() {
         let data = r"set burak 123:";
+        let trailing_data = std::str::from_utf8(b"set burak 123:\n").unwrap();
         let expected = Request::Set {
             key: "burak".to_string(),
             val: "123".to_string(),
         };
 
         let result: Request = deserialize(data).expect("failed to deserialize");
+        let trailing_result: Request = deserialize(trailing_data).expect("failed to deserialize");
 
         assert_eq!(expected, result);
+        assert_eq!(expected, trailing_result);
     }
 
     #[test]
     fn test_deserialize_rm() {
         let data = r"rm burak:";
+        let trailing_data = std::str::from_utf8(b"rm burak:\n").unwrap();
         let expected = Request::Rm {
             key: "burak".to_string(),
         };
 
         let result: Request = deserialize(data).expect("failed to deserialize");
+        let trailing_result: Request = deserialize(trailing_data).expect("failed to deserialize");
 
         assert_eq!(expected, result);
+        assert_eq!(expected, trailing_result);
     }
 }
